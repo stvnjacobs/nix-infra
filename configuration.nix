@@ -72,10 +72,6 @@ in
   # Disable NetworkManager's internal DNS resolution
   networking.networkmanager.dns = "systemd-resolved";
   
-  # These options are unnecessary when managing DNS ourselves
-  networking.useDHCP = false;
-  networking.dhcpcd.enable = false;
-  
   # Configure DNS servers manually (this example uses Cloudflare and Google DNS)
   # IPv6 DNS servers can be used here as well.
   networking.nameservers = [
@@ -104,18 +100,6 @@ in
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "en_US.UTF-8";
-    LC_IDENTIFICATION = "en_US.UTF-8";
-    LC_MEASUREMENT = "en_US.UTF-8";
-    LC_MONETARY = "en_US.UTF-8";
-    LC_NAME = "en_US.UTF-8";
-    LC_NUMERIC = "en_US.UTF-8";
-    LC_PAPER = "en_US.UTF-8";
-    LC_TELEPHONE = "en_US.UTF-8";
-    LC_TIME = "en_US.UTF-8";
-  };
-
   powerManagement.enable = true;
 
   services.avahi = {
@@ -130,9 +114,6 @@ in
     xkb = {
       layout = "us";
       variant = "";
-    };
-    windowManager.bspwm = {
-      enable = true;
     };
   };
 
@@ -195,7 +176,6 @@ in
       "networkmanager"
       "wheel"
       "libvirtd"
-      "plugdev"
       "video"
     ];
     packages = with pkgs; [
@@ -257,7 +237,6 @@ in
       programs = {
         ssh.enable = true;
         gpg.enable = true;
-        atuin.enable = false;
         fuzzel.enable = true;
         bat.enable = true;
 
@@ -333,7 +312,7 @@ in
         go = {
           enable = true;
           env = {
-            GOPATH = "code/go";
+            GOPATH = "$HOME/code/go";
           };
         };
       };
@@ -341,6 +320,7 @@ in
       services = {
         gpg-agent.enable = true;
         ssh-agent.enable = true;
+        emacs.enable = true;
         kanshi = {
           enable = true;
           systemdTarget = "sway-session.target";
@@ -411,7 +391,7 @@ in
           focus = {
             followMouse = "no";
           };
-          gaps = { };
+          #gaps = { };
           keybindings = lib.mkOptionDefault {
             "XF86MonBrightnessDown" = "exec brightnessctl set 5%-";
             "XF86MonBrightnessUp" = "exec brightnessctl set 5%+";
@@ -427,7 +407,7 @@ in
             # Super+Alt+p Current output
             # Super+Ctrl+p Select a window
             "Mod4+p" = "exec ${pkgs.sway-contrib.grimshot}/bin/grimshot save active";
-            "Mod4+Shift+p" = " exec ${pkgs.sway-contrib.grimshot}/bin/grimshot save area";
+            "Mod4+Shift+p" = "exec ${pkgs.sway-contrib.grimshot}/bin/grimshot save area";
             "Mod4+Mod1+p" = "exec ${pkgs.sway-contrib.grimshot}/bin/grimshot save output";
             "Mod4+Ctrl+p" = "exec ${pkgs.sway-contrib.grimshot}/bin/grimshot save window";
           };
@@ -477,9 +457,6 @@ in
     jq
     fd
     fzf
-    (hunspell.withDicts (d: [
-        d.en_US-large
-    ]))
     (aspellWithDicts (
       dicts: with dicts; [
         en
@@ -490,8 +467,6 @@ in
     libreoffice-qt
     languagetool
     vim
-    tailscale
-    firefox
     google-chrome
     gnomeExtensions.night-theme-switcher
 
@@ -554,17 +529,6 @@ in
     };
   };
 
-  # Enable the unfree packages
-  nixpkgs.config.allowUnfreePredicate =
-    pkg:
-    builtins.elem (lib.getName pkg) [
-      "1password-gui"
-      "1password"
-    ];
-
-  # Alternatively, you could also just allow all unfree packages
-  # nixpkgs.config.allowUnfree = true;
-
   programs._1password.enable = true;
   programs._1password-gui = {
     enable = true;
@@ -586,13 +550,18 @@ in
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
-  networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [ 4321 ];
-
+  networking.firewall = {
+    enable = true; 
+    #allowedTCPPorts = [ 4321 ];
+    trustedInterfaces = [ "tailscale0" ];
+  };
+  
   services.fwupd.enable = true;
   services.fprintd.enable = true;
-  services.tailscale.enable = true;
-  services.emacs.enable = true;
+  services.tailscale = {
+    enable = true;
+    useRoutingFeatures = "client";
+  };
 
   services.udev = {
     extraRules = ''
