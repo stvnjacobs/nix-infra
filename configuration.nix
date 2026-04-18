@@ -196,6 +196,7 @@ in
         pkgs.ghostty
         pkgs.duckdb
         pkgs.obsidian
+        pkgs.claude-code
         pkgs.discord
         pkgs.slack
         pkgs.firefox-devedition
