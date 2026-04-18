@@ -211,7 +211,6 @@ in
         pkgs.audacity
         pkgs.mpv
         pkgs.vlc
-        pkgs.spotify
         pkgs.playerctl
         pkgs.pavucontrol
         pkgs.gcc
