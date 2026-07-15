@@ -321,6 +321,7 @@ in
         gpg-agent.enable = true;
         ssh-agent.enable = true;
         emacs.enable = true;
+        syncthing.enable = true;
         kanshi = {
           enable = true;
           systemdTarget = "sway-session.target";
