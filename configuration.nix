@@ -200,6 +200,7 @@ in
         pkgs.discord
         pkgs.slack
         pkgs.firefox-devedition
+        pkgs.gh
         pkgs.linode-cli
         pkgs.ledger-live-desktop
         pkgs.exiftool
@@ -211,6 +212,7 @@ in
         pkgs.audacity
         pkgs.mpv
         pkgs.vlc
+        pkgs.feh
         pkgs.playerctl
         pkgs.pavucontrol
         pkgs.gcc
@@ -486,6 +488,7 @@ in
     unstable.jujutsu
     unstable.xan
     unstable.zed-editor
+    # TODO: unstable.zmx - waiting for nixos-unstable channel to include nixpkgs commit 46449c6b (merged 2026-07-07)
 
     # photo/video
     losslesscut-bin
