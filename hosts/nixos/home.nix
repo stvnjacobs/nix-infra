@@ -28,6 +28,7 @@
     pkgs.playerctl
     pkgs.pavucontrol
     pkgs.gcc
+    pkgs.python3
 
     pkgs.gopls
 
