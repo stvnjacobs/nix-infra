@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, unstable, ... }:
 {
   home.packages = [
     pkgs.hurl
@@ -13,7 +13,9 @@
     pkgs.firefox-devedition
     pkgs.gh
     pkgs.linode-cli
+    unstable.awscli2
     pkgs.ledger-live-desktop
+    pkgs.yt-dlp
     pkgs.exiftool
     pkgs.gimp
     pkgs.inkscape

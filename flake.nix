@@ -21,6 +21,9 @@
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
+          home-manager.extraSpecialArgs = {
+            unstable = nixpkgs-unstable.legacyPackages.x86_64-linux;
+          };
         }
       ];
     };
