@@ -189,6 +189,7 @@
     ripgrep
     htop
     jq
+    bc
     fd
     fzf
     (aspellWithDicts (
