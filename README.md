@@ -7,7 +7,7 @@ NixOS system configuration managed with flakes.
 ```
 flake.nix                        # Flake inputs and nixosConfigurations
 hosts/
-  nixos/
+  laptop/
     configuration.nix            # Host-level system config
     home.nix                     # Home Manager config for steven
     hardware-configuration.nix   # Auto-generated, do not edit
@@ -20,17 +20,17 @@ modules/
 
 ```bash
 # Build only (check for errors)
-sudo nixos-rebuild build --flake .#nixos
+sudo nixos-rebuild build --flake .#laptop
 
 # Activate temporarily (reverts on reboot)
-sudo nixos-rebuild test --flake .#nixos
+sudo nixos-rebuild test --flake .#laptop
 
 # Activate and set as boot default
-sudo nixos-rebuild switch --flake .#nixos
+sudo nixos-rebuild switch --flake .#laptop
 ```
 
 ## Formatting
 
 ```bash
-nixfmt hosts/nixos/configuration.nix
+nixfmt hosts/laptop/configuration.nix
 ```

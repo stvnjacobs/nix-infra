@@ -18,12 +18,12 @@
       ...
     }:
     {
-      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.laptop = nixpkgs.lib.nixosSystem {
         specialArgs = {
           unstable = nixpkgs-unstable.legacyPackages.x86_64-linux;
         };
         modules = [
-          ./hosts/nixos/configuration.nix
+          ./hosts/laptop/configuration.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
