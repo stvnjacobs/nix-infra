@@ -10,22 +10,29 @@
     };
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, home-manager, ... }: {
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      specialArgs = {
-        unstable = nixpkgs-unstable.legacyPackages.x86_64-linux;
+  outputs =
+    {
+      nixpkgs,
+      nixpkgs-unstable,
+      home-manager,
+      ...
+    }:
+    {
+      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          unstable = nixpkgs-unstable.legacyPackages.x86_64-linux;
+        };
+        modules = [
+          ./hosts/nixos/configuration.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = {
+              unstable = nixpkgs-unstable.legacyPackages.x86_64-linux;
+            };
+          }
+        ];
       };
-      modules = [
-        ./hosts/nixos/configuration.nix
-        home-manager.nixosModules.home-manager
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.extraSpecialArgs = {
-            unstable = nixpkgs-unstable.legacyPackages.x86_64-linux;
-          };
-        }
-      ];
     };
-  };
 }
