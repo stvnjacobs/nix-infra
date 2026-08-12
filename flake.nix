@@ -18,6 +18,7 @@
       ...
     }:
     {
+      # laptop
       nixosConfigurations.laptop = nixpkgs.lib.nixosSystem {
         specialArgs = {
           unstable = nixpkgs-unstable.legacyPackages.x86_64-linux;
@@ -34,5 +35,18 @@
           }
         ];
       };
+
+      # linode
+      nixosConfigurations.linode = nixpkgs.lib.nixosSystem {
+        modules = [ ./hosts/linode/configuration.nix ];
+      };
+
+      packages.x86_64-linux.linode-image-gz =
+        (nixpkgs.lib.nixosSystem {
+          modules = [
+            ./images/linode/configuration.nix
+            "${nixpkgs}/nixos/modules/image/images.nix"
+          ];
+        }).config.system.build.images.linode;
     };
 }
