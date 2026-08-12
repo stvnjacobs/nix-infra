@@ -191,6 +191,7 @@
     jq
     bc
     fd
+    file
     fzf
     (aspellWithDicts (
       dicts: with dicts; [

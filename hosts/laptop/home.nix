@@ -56,8 +56,45 @@
     fuzzel.enable = true;
     bat.enable = true;
 
+    # Settings from https://github.com/mrzool/bash-sensible
     bash = {
       enable = true;
+
+      historySize = 500000;
+      historyFileSize = 100000;
+      historyControl = [ "erasedups" "ignoreboth" ];
+      historyIgnore = [ "&" "[ ]*" "exit" "ls" "bg" "fg" "history" "clear" ];
+
+      shellOptions = [
+        "checkwinsize"
+        "globstar"
+        "histappend"
+        "cmdhist"
+        "autocd"
+        "dirspell"
+        "cdspell"
+        "cdable_vars"
+      ];
+
+      initExtra = ''
+        set -o noclobber
+        PROMPT_DIRTRIM=2
+        HISTTIMEFORMAT='%F %T '
+
+        # Append to PROMPT_COMMAND to avoid clobbering ghostty's integration
+        PROMPT_COMMAND="''${PROMPT_COMMAND:+$PROMPT_COMMAND; }history -a"
+
+        bind Space:magic-space
+        bind "set completion-ignore-case on"
+        bind "set completion-map-case on"
+        bind "set show-all-if-ambiguous on"
+        bind "set mark-symlinked-directories on"
+
+        bind '"\e[A": history-search-backward'
+        bind '"\e[B": history-search-forward'
+        bind '"\e[C": forward-char'
+        bind '"\e[D": backward-char'
+      '';
     };
 
     ghostty = {
