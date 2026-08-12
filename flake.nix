@@ -8,6 +8,7 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    tangled-core.url = "git+https://tangled.org/tangled.org/core";
   };
 
   outputs =
@@ -15,6 +16,7 @@
       nixpkgs,
       nixpkgs-unstable,
       home-manager,
+      tangled-core,
       ...
     }:
     {
@@ -39,6 +41,14 @@
       # linode
       nixosConfigurations.linode = nixpkgs.lib.nixosSystem {
         modules = [ ./hosts/linode/configuration.nix ];
+      };
+
+      # knot (Tangled git hosting)
+      nixosConfigurations.knot = tangled-core.inputs.nixpkgs.lib.nixosSystem {
+        modules = [
+          ./hosts/knot/configuration.nix
+          tangled-core.nixosModules.knot
+        ];
       };
 
       packages.x86_64-linux.linode-image-gz =
