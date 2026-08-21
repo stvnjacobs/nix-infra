@@ -7,5 +7,7 @@
 
   networking.hostName = "linode";
 
-  system.stateVersion = "25.11";
+  services.openssh.ports = [ 22 ];
+
+  system.stateVersion = "26.05";
 }

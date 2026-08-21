@@ -47,7 +47,7 @@
       nixosConfigurations.knot = tangled-core.inputs.nixpkgs.lib.nixosSystem {
         modules = [
           ./hosts/knot/configuration.nix
-          tangled-core.nixosModules.knot
+          tangled-core.nixosModules.knot-rs
         ];
       };
 
