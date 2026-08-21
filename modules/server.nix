@@ -36,6 +36,9 @@
     git
     curl
     vim
+    dnsutils
+    ripgrep
+    jq
   ];
 
   time.timeZone = "America/New_York";
