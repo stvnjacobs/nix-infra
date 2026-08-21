@@ -37,6 +37,7 @@
         ssh_host_key_file = "/var/lib/knot/ssh_host_ed25519_key";
       };
       repo.scan_path = "/var/lib/knot/repos";
+      git.object_format = "sha1";
       secrets.sealed_key_file = "/var/lib/knot/knot.sealed";
       atproto.plc_directory = "https://plc.directory";
       xrpc.trusted_proxy_header = "x-forwarded-for";
