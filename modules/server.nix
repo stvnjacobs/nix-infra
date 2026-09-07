@@ -35,12 +35,16 @@
   environment.systemPackages = with pkgs; [
     git
     curl
-    vim
     dnsutils
     ripgrep
     jq
     ghostty.terminfo
   ];
+
+  programs.vim = {
+    enable = true;
+    defaultEditor = true;
+  };
 
   time.timeZone = "America/New_York";
   i18n.defaultLocale = "en_US.UTF-8";
