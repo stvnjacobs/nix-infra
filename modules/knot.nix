@@ -34,11 +34,11 @@
         hostname = config.networking.fqdn;
         admins = [ "did:plc:eyfrtl2gxdohgbjf573dsj6m" ];
         ssh_listen_addr = "[::]:22";
-        ssh_host_key_file = "/var/lib/knot/ssh_host_ed25519_key";
+        ssh_host_key_file = "/var/lib/knot/ssh_host_key";
       };
       repo.scan_path = "/var/lib/knot/repos";
       git.object_format = "sha1";
-      secrets.sealed_key_file = "/var/lib/knot/knot.sealed";
+      secrets.sealed_key_file = "/var/lib/knot/sealed-keys";
       atproto.plc_directory = "https://plc.directory";
       xrpc.trusted_proxy_header = "x-forwarded-for";
     };
