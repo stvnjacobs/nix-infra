@@ -39,6 +39,7 @@
     dnsutils
     ripgrep
     jq
+    ghostty.terminfo
   ];
 
   time.timeZone = "America/New_York";
