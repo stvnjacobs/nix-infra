@@ -238,7 +238,7 @@
     unstable.jujutsu
     unstable.xan
     unstable.zed-editor
-    # TODO: unstable.zmx - waiting for nixos-unstable channel to include nixpkgs commit 46449c6b (merged 2026-07-07)
+    unstable.zmx
 
     # photo/video
     losslesscut-bin
