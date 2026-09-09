@@ -34,6 +34,17 @@ nixfmt hosts/laptop/configuration.nix
 
 These are the target platforms which can be deployed using `nixos-rebuild`.
 
+### Laptop
+
+The active laptop configuration is `hosts/laptop/configuration.nix`, exposed as the
+`laptop` flake output:
+
+```bash
+sudo nixos-rebuild build --flake .#laptop
+sudo nixos-rebuild test --flake .#laptop
+sudo nixos-rebuild switch --flake .#laptop
+```
+
 ## Images
 
 These are configurations for building base NixOS images for the target platform.

@@ -55,6 +55,19 @@
   ];
 
   networking.hostName = "laptop";
+
+  environment.etc."nixos/README".text = ''
+    This machine is managed by this flake:
+
+        /home/steven/nixos#laptop
+
+    Build, test, or activate it with:
+
+        sudo nixos-rebuild build  --flake /home/steven/nixos#laptop
+        sudo nixos-rebuild test   --flake /home/steven/nixos#laptop
+        sudo nixos-rebuild switch --flake /home/steven/nixos#laptop
+  '';
+
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
