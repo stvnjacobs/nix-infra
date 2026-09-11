@@ -192,18 +192,18 @@
         {
           profile.outputs = [
             {
-              criteria = "eDP-1";
-              mode = "2256x1504@60";
-              position = "3200,120";
-              status = "enable";
-              scale = 1.8;
-            }
-            {
               criteria = "Dell Inc. DELL U2723QE 7W4SXN3";
               mode = "3840x2160@60";
               position = "0,0";
               status = "enable";
-              scale = 1.2;
+              scale = 1.5;
+            }
+            {
+              criteria = "eDP-1";
+              mode = "2256x1504@60";
+              position = "2560,0";
+              status = "enable";
+              scale = 1.8;
             }
           ];
         }
