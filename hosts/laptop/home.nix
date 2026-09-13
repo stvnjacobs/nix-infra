@@ -8,6 +8,7 @@
     pkgs.duckdb
     pkgs.obsidian
     pkgs.claude-code
+    unstable.opencode
     pkgs.discord
     pkgs.slack
     pkgs.firefox-devedition
