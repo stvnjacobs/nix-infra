@@ -30,6 +30,8 @@
     plymouth.enable = true;
   };
 
+  fileSystems."/".device = lib.mkForce "/dev/mapper/luks-f5970d6e-a581-43db-a095-c08ff3e998fb";
+
   boot.supportedFilesystems = [ "nfs" ];
   services.rpcbind.enable = true; # needed for NFS
 
@@ -91,15 +93,17 @@
 
   services.resolved = {
     enable = true;
-    dnssec = "true";
-    domains = [ "~." ];
-    fallbackDns = [
-      "45.90.28.0#2e28e3.dns.nextdns.io"
-      "2a07:a8c0::#2e28e3.dns.nextdns.io"
-      "45.90.30.0#2e28e3.dns.nextdns.io"
-      "2a07:a8c1::#2e28e3.dns.nextdns.io"
-    ];
-    dnsovertls = "true";
+    settings.Resolve = {
+      DNSSEC = "true";
+      Domains = [ "~." ];
+      FallbackDNS = [
+        "45.90.28.0#2e28e3.dns.nextdns.io"
+        "2a07:a8c0::#2e28e3.dns.nextdns.io"
+        "45.90.30.0#2e28e3.dns.nextdns.io"
+        "2a07:a8c1::#2e28e3.dns.nextdns.io"
+      ];
+      DNSOverTLS = "true";
+    };
   };
 
   # Set your time zone.
@@ -134,10 +138,7 @@
     '';
   };
 
-  services.displayManager.gdm = {
-    enable = true;
-    wayland = true;
-  };
+  services.displayManager.gdm.enable = true;
 
   # Enable CUPS to print documents.
   services.printing = {
@@ -207,6 +208,7 @@
     htop
     jq
     bc
+    brightnessctl
     fd
     file
     fzf
@@ -261,7 +263,6 @@
     enable = true;
     wrapperFeatures.gtk = true;
   };
-  programs.light.enable = true;
 
   # libvirt
   programs.virt-manager.enable = true;
