@@ -3,25 +3,26 @@
 # Example: ./scripts/create-linode.sh example .#example us-east g6-standard-2
 #
 # Environment:
-#   IMAGE             Linode image ID (default: private/40532238)
+#   IMAGE             Linode image ID (default: private/41512458)
 #   SSH_KEY           Public key injected for root (default: ~/.ssh/id_ed25519.pub)
 #   SSH_WAIT_TIMEOUT  Seconds to wait for first-boot SSH (default: 300)
 #
-# The image must be a nixos-linode image whose root UUID matches the host's
-# nixosLinode.rootFilesystemUuid. Instances are created unbooted because
-# Linode's default kernel cannot boot the image; this script changes the
-# configuration to linode/grub2 before first boot.
+# The image must be a NixOS Linode image built from this flake's `linode` host
+# (see README). The patched nixpkgs Linode module mounts root by the `nixos`
+# label and swap by the `linode-swap` label. Instances are created unbooted
+# because Linode's default kernel cannot boot the image; this script changes
+# the boot configuration to linode/grub2 before first boot.
 #
-# Linode's disk-slot assignments are preserved. GRUB and the initrd find root
-# by filesystem UUID, and modules/profiles/linode.nix activates swap by the
-# `linode-swap` label, so neither depends on /dev/sd* order.
+# Linode's disk-slot assignments are preserved. Linode's GRUB boots from the
+# config's root_device, which already points at the image disk, and the
+# kernel's /dev/sd* order does not matter because of the label mounts.
 set -euo pipefail
 
 LABEL="${1:?Usage: $0 <label> <flake-ref> [region] [type]}"
 FLAKE_REF="${2:?Usage: $0 <label> <flake-ref> [region] [type]}"
 REGION="${3:-us-east}"
 TYPE="${4:-g6-standard-2}"
-IMAGE="${IMAGE:-private/40532238}"
+IMAGE="${IMAGE:-private/41512458}"
 SSH_KEY="${SSH_KEY:-$HOME/.ssh/id_ed25519.pub}"
 SSH_WAIT_TIMEOUT="${SSH_WAIT_TIMEOUT:-300}"
 
@@ -71,9 +72,9 @@ until ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout
   sleep 5
 done
 
-printf '==> Deploying %s...\n' "$FLAKE_REF"
+printf "==> Deploying %s...\n" "$FLAKE_REF"
 nixos-rebuild switch --flake "$FLAKE_REF" --target-host "root@$IP"
 trap - ERR
 
 printf '\nDone. %s is running at %s\n' "$LABEL" "$IP"
-printf 'Record the image ID (%s) and the linode input revision for this host.\n' "$IMAGE"
+printf 'To update: nixos-rebuild switch --flake %s --target-host root@%s\n' "$FLAKE_REF" "$IP"

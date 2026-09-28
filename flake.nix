@@ -13,12 +13,48 @@
 
   outputs =
     {
+      self,
       nixpkgs,
       nixpkgs-unstable,
       home-manager,
       tangled-core,
       ...
     }:
+    let
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+
+      # Patches applied to nixpkgs for server hosts. Drop each once it lands in
+      # the pinned nixpkgs.
+      serverNixpkgsPatches = [
+        # nixos/linode-config: refer to root and swap disks by label
+        # https://github.com/NixOS/nixpkgs/pull/416192
+        (pkgs.fetchpatch {
+          url = "https://github.com/NixOS/nixpkgs/commit/26c89061defdf737f567f30e6f5799f25c6fbca4.patch";
+          hash = "sha256-poesO6LBzRvRTY/tHjrXrtdVXfjdzUvr8eFqm/kc5/4=";
+        })
+      ];
+
+      # Like `input.lib.nixosSystem`, but evaluated from a patched copy of the
+      # given nixpkgs input.
+      patchedNixosSystem =
+        input: args:
+        let
+          src = pkgs.applyPatches {
+            name = "nixpkgs-patched";
+            src = input;
+            patches = serverNixpkgsPatches;
+          };
+        in
+        import "${src}/nixos/lib/eval-config.nix" (
+          args
+          // {
+            # The input's lib carries its version and revision information.
+            inherit (input) lib;
+            system = null;
+            modules = args.modules ++ [ { nixpkgs.flake.source = src.outPath; } ];
+          }
+        );
+    in
     {
       # laptop
       nixosConfigurations.laptop = nixpkgs.lib.nixosSystem {
@@ -39,29 +75,26 @@
       };
 
       # linode
-      nixosConfigurations.linode = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.linode = patchedNixosSystem nixpkgs {
         modules = [ ./hosts/linode/configuration.nix ];
       };
 
-      # knot (Tangled git hosting)
-      nixosConfigurations.knot-bootstrap = nixpkgs.lib.nixosSystem {
+      # knot bootstrap (initial deployment before the full knot config)
+      nixosConfigurations.knot-bootstrap = patchedNixosSystem nixpkgs {
         modules = [ ./hosts/knot/bootstrap.nix ];
       };
 
-      nixosConfigurations.knot = tangled-core.inputs.nixpkgs.lib.nixosSystem {
+      # knot (Tangled git hosting)
+      nixosConfigurations.knot = patchedNixosSystem tangled-core.inputs.nixpkgs {
         modules = [
           ./hosts/knot/configuration.nix
           tangled-core.nixosModules.knot-rs
         ];
       };
 
+      # Linode base image, built from the generic linode host.
       packages.x86_64-linux.linode-image-gz =
-        (nixpkgs.lib.nixosSystem {
-          modules = [
-            ./images/linode/configuration.nix
-            "${nixpkgs}/nixos/modules/image/images.nix"
-          ];
-        }).config.system.build.images.linode;
+        self.nixosConfigurations.linode.config.system.build.images.linode;
 
       devShells.x86_64-linux.default = nixpkgs.legacyPackages.x86_64-linux.mkShell {
         packages = with nixpkgs.legacyPackages.x86_64-linux; [
