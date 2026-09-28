@@ -44,6 +44,10 @@
       };
 
       # knot (Tangled git hosting)
+      nixosConfigurations.knot-bootstrap = nixpkgs.lib.nixosSystem {
+        modules = [ ./hosts/knot/bootstrap.nix ];
+      };
+
       nixosConfigurations.knot = tangled-core.inputs.nixpkgs.lib.nixosSystem {
         modules = [
           ./hosts/knot/configuration.nix
@@ -58,5 +62,18 @@
             "${nixpkgs}/nixos/modules/image/images.nix"
           ];
         }).config.system.build.images.linode;
+
+      devShells.x86_64-linux.default = nixpkgs.legacyPackages.x86_64-linux.mkShell {
+        packages = with nixpkgs.legacyPackages.x86_64-linux; [
+          curl
+          dnsutils
+          github-cli
+          jq
+          linode-cli
+          nixos-rebuild
+          openssl
+          openssh
+        ];
+      };
     };
 }
