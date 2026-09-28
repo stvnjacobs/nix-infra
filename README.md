@@ -12,17 +12,27 @@ hosts/
     home.nix                     # Home Manager config for steven
     hardware-configuration.nix   # Auto-generated, do not edit
   linode/
-    configuration.nix            # Example Linode host config
-images/
-  linode/
-    configuration.nix            # Source for linode-image-gz
+    configuration.nix            # Generic Linode host; also the base image
+  knot/
+    configuration.nix            # Tangled Knot server on Linode
 modules/
-  profiles/
-    linode.nix                   # Linode platform profile
   server.nix                     # Shared server base
+  knot.nix                       # Knot service, ACME, and nginx
   users.nix                      # User accounts
   security.nix                   # Firewall and polkit
 ```
+
+## Patched nixpkgs
+
+Server hosts (`linode`, `knot`) are evaluated from a patched copy of their nixpkgs
+input via `patchedNixosSystem` in `flake.nix`. The patches are listed in
+`serverNixpkgsPatches`:
+
+- [nixpkgs#416192](https://github.com/NixOS/nixpkgs/pull/416192) — makes
+  `virtualisation/linode-config.nix` mount root by the `nixos` label and swap by the
+  `linode-swap` label, so booting no longer depends on Linode's `/dev/sd*` order.
+
+Remove a patch once it is in the pinned nixpkgs. The laptop uses unpatched nixpkgs.
 
 ## Formatting
 
@@ -51,7 +61,9 @@ These are configurations for building base NixOS images for the target platform.
 
 ### Linode image
 
-Build a gzip'd disk image suitable for upload as a Linode custom image:
+`linode-image-gz` is the `linode` host's configuration built with nixpkgs's
+`images.linode` variant. Build a gzip'd disk image suitable for upload as a Linode
+custom image:
 
 ```bash
 nix build .#linode-image-gz
