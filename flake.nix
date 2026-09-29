@@ -9,6 +9,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     tangled-core.url = "git+https://tangled.org/tangled.org/core";
+    # PVM kernel source, pinned to a pvm-612 commit because pkgs/pvm-kernel.nix
+    # hard-codes its version and configs. Update them together.
+    pvm-linux = {
+      url = "github:virt-pvm/linux/58902213f660d7f8d75eb9f08e6c3ff7e4a3721d";
+      flake = false;
+    };
   };
 
   outputs =
@@ -18,6 +24,7 @@
       nixpkgs-unstable,
       home-manager,
       tangled-core,
+      pvm-linux,
       ...
     }:
     let
@@ -74,9 +81,17 @@
         ];
       };
 
-      # linode
+      # linode (generic base for Linode hosts; see linode-image-gz)
       nixosConfigurations.linode = patchedNixosSystem nixpkgs {
         modules = [ ./hosts/linode/configuration.nix ];
+      };
+
+      # linode-pvm (PVM nested virtualization test host)
+      nixosConfigurations.linode-pvm = patchedNixosSystem nixpkgs {
+        specialArgs = {
+          inherit pvm-linux;
+        };
+        modules = [ ./hosts/linode-pvm/configuration.nix ];
       };
 
       # knot bootstrap (initial deployment before the full knot config)
@@ -95,6 +110,14 @@
       # Linode base image, built from the generic linode host.
       packages.x86_64-linux.linode-image-gz =
         self.nixosConfigurations.linode.config.system.build.images.linode;
+
+      # The kernel linode-pvm boots.
+      packages.x86_64-linux.pvm-host-kernel =
+        self.nixosConfigurations.linode-pvm.config.boot.kernelPackages.kernel;
+
+      # PVM-aware guest kernel for QEMU microvm guests on linode-pvm.
+      packages.x86_64-linux.pvm-guest-kernel =
+        (pkgs.callPackage ./pkgs/pvm-kernel.nix { pvm-src = pvm-linux; }).guest.kernel;
 
       devShells.x86_64-linux.default = nixpkgs.legacyPackages.x86_64-linux.mkShell {
         packages = with nixpkgs.legacyPackages.x86_64-linux; [

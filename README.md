@@ -18,9 +18,9 @@ nixfmt hosts/laptop/configuration.nix
 
 ## Patched nixpkgs
 
-Server hosts (`linode`, `knot-bootstrap`, `knot`) are evaluated from a patched copy
-of their nixpkgs input via `patchedNixosSystem` in `flake.nix`. The patches are
-listed in `serverNixpkgsPatches`:
+Server hosts (`linode`, `linode-pvm`, `knot-bootstrap`, `knot`) are evaluated from
+a patched copy of their nixpkgs input via `patchedNixosSystem` in `flake.nix`. The
+patches are listed in `serverNixpkgsPatches`:
 
 - [nixpkgs#416192](https://github.com/NixOS/nixpkgs/pull/416192) — makes
   `virtualisation/linode-config.nix` mount root by the `nixos` label and swap by the
@@ -32,6 +32,7 @@ Remove a patch once it is in the pinned nixpkgs. The laptop uses unpatched nixpk
 
 - [Laptop](hosts/laptop/README.md): applying changes and known issues.
 - [Knot](hosts/knot/README.md): deployment, initial setup, and recovery.
+- [Linode PVM](hosts/linode-pvm/README.md): PVM nested virtualization test host.
 
 ## Images
 
