@@ -2,7 +2,7 @@
 
 This walkthrough creates a Linode running the PVM host kernel, then boots a
 minimal PVM-aware Linux guest with QEMU. It ends at a guest shell; it does not
-set up Tangled spindle or vsock.
+set up vsock.
 
 Creating the Linode starts a billable instance. The commands below use the
 `us-east` region and `g6-standard-2` size by default; change these if needed.
