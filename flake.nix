@@ -61,6 +61,23 @@
             modules = args.modules ++ [ { nixpkgs.flake.source = src.outPath; } ];
           }
         );
+
+      # The spindle's NixOS microVM guest: tangled-core's image config with a
+      # PVM guest kernel. Uses tangled-core's nixpkgs, like its stock image.
+      spindleGuest = tangled-core.inputs.nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {
+          inherit pvm-linux;
+        };
+        modules = [
+          tangled-core.nixosModules.spindle-nixos
+          ./hosts/spindle/guest.nix
+        ];
+      };
+      spindleImage =
+        tangled-core.inputs.nixpkgs.legacyPackages.x86_64-linux.callPackage
+          "${tangled-core}/nix/pkgs/spindle-nixos-image.nix"
+          { nixosSystem = spindleGuest; };
     in
     {
       # laptop
@@ -107,6 +124,18 @@
         ];
       };
 
+      # spindle (Tangled CI runner, microVM workflows on a PVM host). Uses this
+      # flake's nixpkgs so its PVM host kernel builds like linode-pvm's.
+      nixosConfigurations.spindle = patchedNixosSystem nixpkgs {
+        specialArgs = {
+          inherit pvm-linux spindleImage;
+        };
+        modules = [
+          ./hosts/spindle/configuration.nix
+          tangled-core.nixosModules.spindle
+        ];
+      };
+
       # Linode base image, built from the generic linode host.
       packages.x86_64-linux.linode-image-gz =
         self.nixosConfigurations.linode.config.system.build.images.linode;
@@ -118,6 +147,9 @@
       # PVM-aware guest kernel for QEMU microvm guests on linode-pvm.
       packages.x86_64-linux.pvm-guest-kernel =
         (pkgs.callPackage ./pkgs/pvm-kernel.nix { pvm-src = pvm-linux; }).guest.kernel;
+
+      # The spindle's microVM image (spec.json, kernel, initrd, store disk).
+      packages.x86_64-linux.spindle-image = spindleImage;
 
       devShells.x86_64-linux.default = nixpkgs.legacyPackages.x86_64-linux.mkShell {
         packages = with nixpkgs.legacyPackages.x86_64-linux; [
