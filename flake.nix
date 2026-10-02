@@ -9,12 +9,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     tangled-core.url = "git+https://tangled.org/tangled.org/core";
-    # PVM kernel source, pinned to a pvm-612 commit because pkgs/pvm-kernel.nix
-    # hard-codes its version and configs. Update them together.
-    pvm-linux = {
-      url = "github:virt-pvm/linux/58902213f660d7f8d75eb9f08e6c3ff7e4a3721d";
-      flake = false;
-    };
+    # PVM kernels and modules. The local checkout until it is published; then
+    # its Tangled URL. Its nixpkgs must not follow ours: the kernels are built
+    # from its own pin.
+    nixos-pvm.url = "git+file:///home/steven/code/nixos-pvm";
   };
 
   outputs =
@@ -24,7 +22,7 @@
       nixpkgs-unstable,
       home-manager,
       tangled-core,
-      pvm-linux,
+      nixos-pvm,
       ...
     }:
     let
@@ -63,15 +61,15 @@
         );
 
       # The spindle's NixOS microVM guest: tangled-core's image config with a
-      # PVM guest kernel. Uses tangled-core's nixpkgs, like its stock image.
+      # PVM guest kernel (and `pti=off nokaslr`), which PVM guests must boot.
+      # Uses tangled-core's nixpkgs, like its stock image; the guest kernel
+      # comes from nixos-pvm's.
       spindleGuest = tangled-core.inputs.nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = {
-          inherit pvm-linux;
-        };
         modules = [
           tangled-core.nixosModules.spindle-nixos
-          ./hosts/spindle/guest.nix
+          nixos-pvm.nixosModules.guest
+          { pvm.guest.enable = true; }
         ];
       };
       spindleImage =
@@ -103,14 +101,6 @@
         modules = [ ./hosts/linode/configuration.nix ];
       };
 
-      # linode-pvm (PVM nested virtualization test host)
-      nixosConfigurations.linode-pvm = patchedNixosSystem nixpkgs {
-        specialArgs = {
-          inherit pvm-linux;
-        };
-        modules = [ ./hosts/linode-pvm/configuration.nix ];
-      };
-
       # knot bootstrap (initial deployment before the full knot config)
       nixosConfigurations.knot-bootstrap = patchedNixosSystem nixpkgs {
         modules = [ ./hosts/knot/bootstrap.nix ];
@@ -124,29 +114,22 @@
         ];
       };
 
-      # spindle (Tangled CI runner, microVM workflows on a PVM host). Uses this
-      # flake's nixpkgs so its PVM host kernel builds like linode-pvm's.
+      # spindle (Tangled CI runner, microVM workflows on a PVM host). The PVM
+      # host kernel comes from nixos-pvm's nixpkgs.
       nixosConfigurations.spindle = patchedNixosSystem nixpkgs {
         specialArgs = {
-          inherit pvm-linux spindleImage;
+          inherit spindleImage;
         };
         modules = [
           ./hosts/spindle/configuration.nix
           tangled-core.nixosModules.spindle
+          nixos-pvm.nixosModules.host
         ];
       };
 
       # Linode base image, built from the generic linode host.
       packages.x86_64-linux.linode-image-gz =
         self.nixosConfigurations.linode.config.system.build.images.linode;
-
-      # The kernel linode-pvm boots.
-      packages.x86_64-linux.pvm-host-kernel =
-        self.nixosConfigurations.linode-pvm.config.boot.kernelPackages.kernel;
-
-      # PVM-aware guest kernel for QEMU microvm guests on linode-pvm.
-      packages.x86_64-linux.pvm-guest-kernel =
-        (pkgs.callPackage ./pkgs/pvm-kernel.nix { pvm-src = pvm-linux; }).guest.kernel;
 
       # The spindle's microVM image (spec.json, kernel, initrd, store disk).
       packages.x86_64-linux.spindle-image = spindleImage;

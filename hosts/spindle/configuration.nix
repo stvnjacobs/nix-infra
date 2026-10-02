@@ -4,9 +4,11 @@
   imports = [
     "${modulesPath}/virtualisation/linode-config.nix"
     ../../modules/server.nix
-    ../../modules/pvm-host.nix
     ../../modules/spindle.nix
   ];
+
+  # nixos-pvm's host module, imported in flake.nix.
+  pvm.host.enable = true;
 
   nixpkgs.hostPlatform = "x86_64-linux";
 

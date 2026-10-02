@@ -1,11 +1,11 @@
-# Tangled spindle CI runner using the microVM engine, behind nginx for TLS.
+# Tangled spindle CI runner (microVM and nixery engines), behind nginx for TLS.
 #
-# Workflows run in PVM guests; import modules/pvm-host.nix alongside this
-# module. The image is the flake's `spindle-image` package, passed in as
-# `spindleImage`.
+# microVM workflows run in PVM guests; enable nixos-pvm's host module
+# (`pvm.host.enable`) alongside this module. The image is the flake's
+# `spindle-image` package, passed in as `spindleImage`. The upstream module also
+# enables Docker for `engine: nixery` workflows.
 {
   config,
-  lib,
   spindleImage,
   ...
 }:
@@ -58,7 +58,8 @@ in
       microvm = {
         defaultImage = "nixos";
         # Keep 2 GiB and the remaining vCPUs for the host. The image asks for
-        # 4 GiB and 2 vCPUs per workflow.
+        # 4 GiB and 2 vCPUs per workflow. Nixery (Docker) workflows are not
+        # counted here, so they compete with microVMs for that headroom.
         limits.total = {
           memoryMiB = 6144;
           vcpus = 4;
@@ -83,20 +84,6 @@ in
     wants = [ "network-online.target" ];
     after = [ "network-online.target" ];
   };
-
-  # The upstream module enables Docker for the nixery engine. This spindle only
-  # runs microVM workflows, and the PVM host kernel lacks the nftables support
-  # Docker's iptables uses.
-  virtualisation.docker.enable = lib.mkForce false;
-
-  pvm.host.extraKernelConfig = ''
-    # QEMU's per-workflow networking (slirp4netns).
-    CONFIG_TUN=m
-    # spindle applies per-workflow CPU limits through cgroup v2 cpu.max.
-    CONFIG_CFS_BANDWIDTH=y
-    # QEMU uses unshare user namespaces to isolate each VM's network.
-    CONFIG_USER_NS=y
-  '';
 
   # spindle resolves `image: <name>` to <imageDir>/<name>/spec.json.
   systemd.tmpfiles.rules = [

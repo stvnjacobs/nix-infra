@@ -18,7 +18,7 @@ nixfmt hosts/laptop/configuration.nix
 
 ## Patched nixpkgs
 
-Server hosts (`linode`, `linode-pvm`, `knot-bootstrap`, `knot`, `spindle`) are evaluated from
+Server hosts (`linode`, `knot-bootstrap`, `knot`, `spindle`) are evaluated from
 a patched copy of their nixpkgs input via `patchedNixosSystem` in `flake.nix`. The
 patches are listed in `serverNixpkgsPatches`:
 
@@ -32,8 +32,11 @@ Remove a patch once it is in the pinned nixpkgs. The laptop uses unpatched nixpk
 
 - [Laptop](hosts/laptop/README.md): applying changes and known issues.
 - [Knot](hosts/knot/README.md): deployment, initial setup, and recovery.
-- [Linode PVM](hosts/linode-pvm/README.md): PVM nested virtualization test host.
 - [Spindle](hosts/spindle/README.md): Tangled CI runner with microVM workflows on PVM.
+
+The PVM kernels and modules live in their own repo, `nixos-pvm` (the
+`nixos-pvm` flake input), with a Linode example and tutorial in
+`examples/linode`.
 
 ## Images
 
