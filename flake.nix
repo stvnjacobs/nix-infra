@@ -9,10 +9,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     tangled-core.url = "git+https://tangled.org/tangled.org/core";
-    # PVM kernels and modules. The local checkout until it is published; then
-    # its Tangled URL. Its nixpkgs must not follow ours: the kernels are built
-    # from its own pin.
-    nixos-pvm.url = "git+file:///home/steven/code/nixos-pvm";
+    # PVM kernels and modules. Its nixpkgs must not follow ours: the kernels
+    # are built from its own pin.
+    nixos-pvm.url = "git+https://tangled.org/jacobs.land/nixos-pvm";
   };
 
   outputs =

@@ -276,16 +276,17 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1791228045,
-        "narHash": "sha256-tDYR42m2DnH4a7H5Zpbhm9B3L/ARAgCfqjxw1FrU1Fc=",
-        "rev": "62ff0a64ddca6e4a38d80ac39a78b4701042590e",
-        "revCount": 3,
+        "lastModified": 1791579244,
+        "narHash": "sha256-7a3ZBEswOi1vd9CP/3HmdsSVGJlHFbrwXSkEoNi/KRE=",
+        "ref": "refs/heads/main",
+        "rev": "9d5f0f69d898f68f25ece9d5553c574f3fd6a8b1",
+        "revCount": 4,
         "type": "git",
-        "url": "file:///home/steven/code/nixos-pvm"
+        "url": "https://tangled.org/jacobs.land/nixos-pvm"
       },
       "original": {
         "type": "git",
-        "url": "file:///home/steven/code/nixos-pvm"
+        "url": "https://tangled.org/jacobs.land/nixos-pvm"
       }
     },
     "nixpkgs": {

@@ -34,9 +34,9 @@ Remove a patch once it is in the pinned nixpkgs. The laptop uses unpatched nixpk
 - [Knot](hosts/knot/README.md): deployment, initial setup, and recovery.
 - [Spindle](hosts/spindle/README.md): Tangled CI runner with microVM workflows on PVM.
 
-The PVM kernels and modules live in their own repo, `nixos-pvm` (the
-`nixos-pvm` flake input), with a Linode example and tutorial in
-`examples/linode`.
+The PVM kernels and modules live in their own repo,
+[`nixos-pvm`](https://tangled.org/jacobs.land/nixos-pvm) (the `nixos-pvm`
+flake input).
 
 ## Images
 
