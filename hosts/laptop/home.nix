@@ -33,7 +33,7 @@
 
     pkgs.gopls
 
-    pkgs.nixfmt-rfc-style
+    pkgs.nixfmt
 
     # fonts
     pkgs.dejavu_fonts
