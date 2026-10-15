@@ -185,6 +185,7 @@
     gpg-agent.enable = true;
     emacs.enable = true;
     syncthing.enable = true;
+    keybase.enable = true;
     kanshi = {
       enable = true;
       systemdTarget = "sway-session.target";
