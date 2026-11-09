@@ -4,6 +4,11 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    # Pinned to the commit before xan 0.61.0 landed, whose zstd-sys build
+    # broke on a pkg-config probe regression in nixpkgs-unstable.
+    # TODO: drop this input and the xan override below once nixpkgs fixes it
+    # upstream (NixOS/nixpkgs#585001, #585245, #585145 are the same bug).
+    nixpkgs-unstable-prev-xan.url = "github:NixOS/nixpkgs/7fd4004d0511991fff3a0524856a9be09e28c5f0";
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -16,12 +21,17 @@
       self,
       nixpkgs,
       nixpkgs-unstable,
+      nixpkgs-unstable-prev-xan,
       home-manager,
       tangled-core,
       ...
     }:
     let
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
+
+      unstable = nixpkgs-unstable.legacyPackages.x86_64-linux // {
+        xan = nixpkgs-unstable-prev-xan.legacyPackages.x86_64-linux.xan;
+      };
 
       # Patches applied to nixpkgs for server hosts. Drop each once it lands in
       # the pinned nixpkgs.
@@ -59,7 +69,7 @@
       # laptop
       nixosConfigurations.laptop = nixpkgs.lib.nixosSystem {
         specialArgs = {
-          unstable = nixpkgs-unstable.legacyPackages.x86_64-linux;
+          inherit unstable;
         };
         modules = [
           ./hosts/laptop/configuration.nix
@@ -68,7 +78,7 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.extraSpecialArgs = {
-              unstable = nixpkgs-unstable.legacyPackages.x86_64-linux;
+              inherit unstable;
             };
           }
         ];
