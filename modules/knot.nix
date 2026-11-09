@@ -40,7 +40,9 @@
       git.object_format = "sha1";
       secrets.sealed_key_file = "/var/lib/knot/sealed-keys";
       atproto.plc_directory = "https://plc.directory";
+      contact.email = "stjacobs@fastmail.fm";
       xrpc.trusted_proxy_header = "x-forwarded-for";
+      lfs.store_path = "/var/lib/knot/lfs";
     };
   };
 }
