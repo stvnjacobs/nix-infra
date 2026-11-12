@@ -13,7 +13,7 @@
       in
       {
         flakes = {
-          inherit (inputs.tg.packages.${final.stdenv.hostPlatform.system}) tg;
+          inherit (inputs.tg.packages.${final.stdenv.hostPlatform.system}) tg tgmcp;
         };
 
         unstable = importNixpkgs inputs.nixpkgs-unstable;

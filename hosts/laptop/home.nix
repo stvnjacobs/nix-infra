@@ -7,7 +7,6 @@
     pkgs.ghostty
     pkgs.duckdb
     pkgs.obsidian
-    pkgs.claude-code
     pkgs.unstable.opencode
     pkgs.discord
     pkgs.slack
@@ -68,6 +67,11 @@
     gpg.enable = true;
     fuzzel.enable = true;
     bat.enable = true;
+
+    claude-code = {
+      enable = true;
+      mcpServers.tangled.command = "${pkgs.flakes.tgmcp}/bin/tgmcp";
+    };
 
     # Settings from https://github.com/mrzool/bash-sensible
     bash = {
