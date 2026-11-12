@@ -12,6 +12,10 @@
           };
       in
       {
+        flakes = {
+          inherit (inputs.tg.packages.${final.stdenv.hostPlatform.system}) tg;
+        };
+
         unstable = importNixpkgs inputs.nixpkgs-unstable;
 
         # Packages held at an older rev because their current channel build is

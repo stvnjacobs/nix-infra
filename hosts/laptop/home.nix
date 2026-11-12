@@ -13,6 +13,7 @@
     pkgs.slack
     pkgs.firefox-devedition
     pkgs.gh
+    pkgs.flakes.tg
     pkgs.linode-cli
     pkgs.unstable.awscli2
     pkgs.ledger-live-desktop

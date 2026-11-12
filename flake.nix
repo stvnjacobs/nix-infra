@@ -14,6 +14,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     tangled-core.url = "git+https://tangled.org/tangled.org/core";
+    tg.url = "git+https://tangled.org/aly.codes/tg";
   };
 
   outputs =
