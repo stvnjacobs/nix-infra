@@ -1,4 +1,4 @@
-{ pkgs, lib, unstable, ... }:
+{ pkgs, lib, ... }:
 {
   home.packages = [
     pkgs.hurl
@@ -8,13 +8,13 @@
     pkgs.duckdb
     pkgs.obsidian
     pkgs.claude-code
-    unstable.opencode
+    pkgs.unstable.opencode
     pkgs.discord
     pkgs.slack
     pkgs.firefox-devedition
     pkgs.gh
     pkgs.linode-cli
-    unstable.awscli2
+    pkgs.unstable.awscli2
     pkgs.ledger-live-desktop
     pkgs.yt-dlp
     pkgs.exiftool
