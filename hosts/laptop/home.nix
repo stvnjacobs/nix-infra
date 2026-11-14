@@ -1,10 +1,9 @@
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 {
   home.packages = [
     pkgs.hurl
     pkgs.bat
     pkgs.shellcheck
-    pkgs.ghostty
     pkgs.duckdb
     pkgs.obsidian
     pkgs.unstable.opencode
@@ -235,7 +234,7 @@
     config = rec {
       modifier = "Mod4";
       menu = "${pkgs.fuzzel}/bin/fuzzel";
-      terminal = "${pkgs.ghostty}/bin/ghostty";
+      terminal = "${config.programs.ghostty.package}/bin/ghostty";
       startup = [
         # Launch Firefox on start
         #{command = "firefox";}
