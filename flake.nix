@@ -88,7 +88,7 @@
       };
 
       # knot (Tangled git hosting)
-      nixosConfigurations.knot = patchedNixosSystem tangled-core.inputs.nixpkgs {
+      nixosConfigurations.knot = patchedNixosSystem nixpkgs {
         modules = [
           ./hosts/knot/configuration.nix
           tangled-core.nixosModules.knot-rs
