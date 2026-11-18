@@ -69,6 +69,7 @@
 
     claude-code = {
       enable = true;
+      package = pkgs.unstable.claude-code;
       mcpServers.tangled.command = "${pkgs.flakes.tgmcp}/bin/tgmcp";
     };
 
