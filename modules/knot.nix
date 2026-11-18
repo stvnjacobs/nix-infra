@@ -18,6 +18,8 @@
     virtualHosts.${config.networking.fqdn} = {
       enableACME = true;
       forceSSL = true;
+      # TODO: re-enable once nixos-26.05 ships nginx >= 1.30.7 (CVE-2026-123007).
+      http2 = false;
       locations."/" = {
         proxyPass = "http://127.0.0.1:5555";
         proxyWebsockets = true;
