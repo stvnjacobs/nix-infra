@@ -57,6 +57,18 @@ ssh root@<ip> reboot
 The first `switch` runs on the base image's stock kernel; the reboot switches
 to the PVM kernel.
 
+Before the first `switch`, create the spindle's signing key. spindle never
+generates it and does not start without it. It signs the did:web document at
+`/.well-known/did.json`, which tg and the knot use to find the spindle. Keep it
+out of the Nix store and back it up: a new key changes the spindle's identity
+key.
+
+```bash
+ssh root@<ip> 'install -d -m 700 /var/lib/secrets &&
+  openssl ecparam -name prime256v1 -genkey -noout -out /var/lib/secrets/spindle-key.pem &&
+  chmod 600 /var/lib/secrets/spindle-key.pem'
+```
+
 After the reboot, check the host:
 
 ```bash
@@ -78,6 +90,15 @@ curl --fail-with-body https://spindle.jacobs.land/xrpc/sh.tangled.owner
 
 The response must contain the owner DID from `modules/spindle.nix`. The
 appview checks this value when you register the spindle.
+
+Check the DID document:
+
+```bash
+curl --fail-with-body https://spindle.jacobs.land/.well-known/did.json
+```
+
+It must have the `id` `did:web:spindle.jacobs.land` and a `#tangled_spindle`
+service of type `TangledSpindle` pointing at `https://spindle.jacobs.land`.
 
 ## Using it
 

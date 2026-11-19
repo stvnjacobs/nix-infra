@@ -4,6 +4,9 @@
 # (`pvm.host.enable`) alongside this module. The image is the flake's
 # `spindle-image` package, passed in as `spindleImage`. The upstream module also
 # enables Docker for `engine: nixery` workflows.
+#
+# spindle serves its did:web document from a signing key it never generates;
+# create it on the host before deploying (see hosts/spindle/README.md).
 {
   config,
   spindleImage,
@@ -49,6 +52,15 @@ in
       owner = "did:plc:eyfrtl2gxdohgbjf573dsj6m";
       listenAddr = "127.0.0.1:6555";
     };
+
+    # EC P-256 key behind https://<hostname>/.well-known/did.json. tg and the
+    # knot resolve the spindle's endpoint from that document. Not in the Nix
+    # store; losing it changes the spindle's identity key. Upstream asserts
+    # this and contact.email at evaluation; it only checks that the file
+    # exists when spindle starts.
+    keyPath = "/var/lib/secrets/spindle-key.pem";
+    # Served publicly by org.tangled.spindle.describeSpindle.
+    contact.email = config.security.acme.defaults.email;
 
     pipelines = {
       # PVM guests are slower than hardware KVM, and the timeout also covers
