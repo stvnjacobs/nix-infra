@@ -57,17 +57,11 @@ ssh root@<ip> reboot
 The first `switch` runs on the base image's stock kernel; the reboot switches
 to the PVM kernel.
 
-Before the first `switch`, create the spindle's signing key. spindle never
-generates it and does not start without it. It signs the did:web document at
-`/.well-known/did.json`, which tg and the knot use to find the spindle. Keep it
-out of the Nix store and back it up: a new key changes the spindle's identity
-key.
-
-```bash
-ssh root@<ip> 'install -d -m 700 /var/lib/secrets &&
-  openssl ecparam -name prime256v1 -genkey -noout -out /var/lib/secrets/spindle-key.pem &&
-  chmod 600 /var/lib/secrets/spindle-key.pem'
-```
+spindle needs an EC P-256 signing key for the did:web document at
+`/.well-known/did.json`, which tg and the knot use to find the spindle. The
+`spindle-key` service generates `/var/lib/secrets/spindle-key.pem` before
+spindle starts if it is missing. A new key is recoverable: clients that cached
+the old document distrust the spindle until they refetch it.
 
 After the reboot, check the host:
 

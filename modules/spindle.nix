@@ -6,9 +6,10 @@
 # enables Docker for `engine: nixery` workflows.
 #
 # spindle serves its did:web document from a signing key it never generates;
-# create it on the host before deploying (see hosts/spindle/README.md).
+# `spindle-key` below creates it on first boot.
 {
   config,
+  pkgs,
   spindleImage,
   ...
 }:
@@ -55,9 +56,8 @@ in
 
     # EC P-256 key behind https://<hostname>/.well-known/did.json. tg and the
     # knot resolve the spindle's endpoint from that document. Not in the Nix
-    # store; losing it changes the spindle's identity key. Upstream asserts
-    # this and contact.email at evaluation; it only checks that the file
-    # exists when spindle starts.
+    # store. `spindle-key` generates it if missing; a new key only means
+    # clients refetch the document.
     keyPath = "/var/lib/secrets/spindle-key.pem";
     # Served publicly by org.tangled.spindle.describeSpindle.
     contact.email = config.security.acme.defaults.email;
@@ -88,6 +88,21 @@ in
         trustedPublicKeys = [ "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=" ];
       };
     };
+  };
+
+  # Generate the did:web signing key once, as tangled.org/infra does for its
+  # spindle (hosts/spindle-hel/services/spindle.nix).
+  systemd.services.spindle-key = {
+    description = "generate the spindle's did:web signing key once";
+    wantedBy = [ "spindle.service" ];
+    before = [ "spindle.service" ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      umask 077
+      key=${cfg.keyPath}
+      mkdir -p "$(dirname "$key")"
+      test -e "$key" || ${pkgs.openssl}/bin/openssl ecparam -name prime256v1 -genkey -noout -out "$key"
+    '';
   };
 
   # spindle retries Jetstream in a tight loop without backoff; starting before
