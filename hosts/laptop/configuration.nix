@@ -7,7 +7,6 @@
   lib,
   pkgs,
   modulesPath,
-  unstable,
   ...
 }:
 
@@ -237,18 +236,18 @@
     skopeo
 
     # TODO: unstable in home manager
-    unstable.jujutsu
-    unstable.xan
-    unstable.zed-editor
-    unstable.zmx
+    pkgs.unstable.jujutsu
+    pkgs.pinned.xan
+    pkgs.unstable.zed-editor
+    pkgs.unstable.zmx
 
     # photo/video
     losslesscut-bin
 
     via
     dos2unix
-    unstable.qmk
-    unstable.qmk-udev-rules
+    pkgs.unstable.qmk
+    pkgs.unstable.qmk-udev-rules
   ];
 
   documentation.man = {

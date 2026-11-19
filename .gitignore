@@ -5,3 +5,5 @@ tmp/
 
 # nix build output
 result
+
+.cloudflare/

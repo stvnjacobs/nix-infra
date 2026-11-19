@@ -1,8 +1,9 @@
 # Knot
 
 The Tangled Knot git-hosting server uses `hosts/knot/configuration.nix` as the
-`knot` flake output. It uses its original Linode image with an explicit
-root-filesystem UUID.
+`knot` flake output. It runs on Linode, with a
+[patch](https://github.com/NixOS/nixpkgs/pull/416192) to the nixpkgs Linode
+module.
 
 ## Later deployments
 

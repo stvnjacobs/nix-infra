@@ -1,20 +1,19 @@
-{ pkgs, lib, unstable, ... }:
+{ config, pkgs, lib, ... }:
 {
   home.packages = [
     pkgs.hurl
     pkgs.bat
     pkgs.shellcheck
-    pkgs.ghostty
     pkgs.duckdb
     pkgs.obsidian
-    pkgs.claude-code
-    unstable.opencode
+    pkgs.unstable.opencode
     pkgs.discord
     pkgs.slack
     pkgs.firefox-devedition
     pkgs.gh
+    pkgs.flakes.tg
     pkgs.linode-cli
-    unstable.awscli2
+    pkgs.unstable.awscli2
     pkgs.ledger-live-desktop
     pkgs.yt-dlp
     pkgs.exiftool
@@ -33,7 +32,7 @@
 
     pkgs.gopls
 
-    pkgs.nixfmt-rfc-style
+    pkgs.nixfmt
 
     # fonts
     pkgs.dejavu_fonts
@@ -67,6 +66,12 @@
     gpg.enable = true;
     fuzzel.enable = true;
     bat.enable = true;
+
+    claude-code = {
+      enable = true;
+      package = pkgs.unstable.claude-code;
+      mcpServers.tangled.command = "${pkgs.flakes.tgmcp}/bin/tgmcp";
+    };
 
     # Settings from https://github.com/mrzool/bash-sensible
     bash = {
@@ -185,6 +190,7 @@
     gpg-agent.enable = true;
     emacs.enable = true;
     syncthing.enable = true;
+    keybase.enable = true;
     kanshi = {
       enable = true;
       systemdTarget = "sway-session.target";
@@ -229,7 +235,7 @@
     config = rec {
       modifier = "Mod4";
       menu = "${pkgs.fuzzel}/bin/fuzzel";
-      terminal = "${pkgs.ghostty}/bin/ghostty";
+      terminal = "${config.programs.ghostty.package}/bin/ghostty";
       startup = [
         # Launch Firefox on start
         #{command = "firefox";}

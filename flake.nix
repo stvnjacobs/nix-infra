@@ -4,21 +4,26 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    # xan's zstd-sys dependency fails to build on nixpkgs-unstable, which hit a
+    # pkg-config probe regression (NixOS/nixpkgs#585001, #585245, #585145).
+    # TODO: drop this input and `pinned.xan` in modules/overlays.nix once
+    # `nix build github:NixOS/nixpkgs/nixos-unstable#xan` succeeds again.
+    nixpkgs-unstable-prev-xan.url = "github:NixOS/nixpkgs/7fd4004d0511991fff3a0524856a9be09e28c5f0";
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     tangled-core.url = "git+https://tangled.org/tangled.org/core";
+    tg.url = "git+https://tangled.org/aly.codes/tg";
     # PVM kernels and modules. Its nixpkgs must not follow ours: the kernels
     # are built from its own pin.
     nixos-pvm.url = "git+https://tangled.org/jacobs.land/nixos-pvm";
   };
 
   outputs =
-    {
+    inputs@{
       self,
       nixpkgs,
-      nixpkgs-unstable,
       home-manager,
       tangled-core,
       nixos-pvm,
@@ -80,17 +85,15 @@
       # laptop
       nixosConfigurations.laptop = nixpkgs.lib.nixosSystem {
         specialArgs = {
-          unstable = nixpkgs-unstable.legacyPackages.x86_64-linux;
+          inherit inputs;
         };
         modules = [
+          ./modules/overlays.nix
           ./hosts/laptop/configuration.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = {
-              unstable = nixpkgs-unstable.legacyPackages.x86_64-linux;
-            };
           }
         ];
       };
@@ -106,7 +109,7 @@
       };
 
       # knot (Tangled git hosting)
-      nixosConfigurations.knot = patchedNixosSystem tangled-core.inputs.nixpkgs {
+      nixosConfigurations.knot = patchedNixosSystem nixpkgs {
         modules = [
           ./hosts/knot/configuration.nix
           tangled-core.nixosModules.knot-rs
